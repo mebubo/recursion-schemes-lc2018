@@ -58,7 +58,7 @@ object SparkConverter extends GDataInstances {
     * We will use that to know when we need to "unwrap" the value we had wrapped in a Row at the previous step although we
     * shouldn't have.
     */
-  def gDataToRow[D](implicit D: Recursive.Aux[D, GData]): GAlgebra[(D, ?), GData, Row] = TODO
+  def gDataToRow[D](implicit D: Recursive.Aux[D, GData]): GAlgebra[(D, *), GData, Row] = TODO
 
   def fromGDataToSparkRow(row: Fix[GData]): Row =
     row.para[Row](gDataToRow)
@@ -112,11 +112,11 @@ object AvroConverter extends SchemaToAvroAlgebras with GDataInstances {
       implicit S: Birecursive.Aux[S, SchemaF],
       D: Birecursive.Aux[D, GData]): \/[Incompatibility[D], GenericContainer] = {
 
-    val zipWithSchemaAlg: CoalgebraM[\/[Incompatibility[D], ?], DataWithSchema, (S, D)] = TODO
+    val zipWithSchemaAlg: CoalgebraM[\/[Incompatibility[D], *], DataWithSchema, (S, D)] = TODO
 
-    val alg: AlgebraM[\/[Incompatibility[D], ?], DataWithSchema, GenericContainer] = TODO
+    val alg: AlgebraM[\/[Incompatibility[D], *], DataWithSchema, GenericContainer] = TODO
 
-    (schema, data).hyloM[\/[Incompatibility[D], ?], DataWithSchema, GenericContainer](alg, zipWithSchemaAlg)
+    (schema, data).hyloM[\/[Incompatibility[D], *], DataWithSchema, GenericContainer](alg, zipWithSchemaAlg)
   }
 
 }

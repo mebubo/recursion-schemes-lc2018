@@ -59,7 +59,7 @@ object SparkConverter extends GDataInstances {
     * We will use that to know when we need to "unwrap" the value we had wrapped in a Row at the previous step although we
     * shouldn't have.
     */
-  def gDataToRow[D](implicit D: Recursive.Aux[D, GData]): GAlgebra[(D, ?), GData, Row] = {
+  def gDataToRow[D](implicit D: Recursive.Aux[D, GData]): GAlgebra[(D, *), GData, Row] = {
     case GArray(elems) =>
       val values = elems.map {
         case (previous, current) =>
@@ -140,7 +140,7 @@ object AvroConverter extends SchemaToAvroAlgebras with GDataInstances {
       implicit S: Birecursive.Aux[S, SchemaF],
       D: Birecursive.Aux[D, GData]): \/[Incompatibility[D], GenericContainer] = {
 
-    val zipWithSchemaAlg: CoalgebraM[\/[Incompatibility[D], ?], DataWithSchema, (S, D)] = {
+    val zipWithSchemaAlg: CoalgebraM[\/[Incompatibility[D], *], DataWithSchema, (S, D)] = {
       case (sch, dat) =>
         (sch.project, dat.project) match {
 
@@ -185,7 +185,7 @@ object AvroConverter extends SchemaToAvroAlgebras with GDataInstances {
             Incompatibility(schemaFToAvro(s.embed), d.embed).left
         }
     }
-    val alg: AlgebraM[\/[Incompatibility[D], ?], DataWithSchema, GenericContainer] = {
+    val alg: AlgebraM[\/[Incompatibility[D], *], DataWithSchema, GenericContainer] = {
       case EnvT((avroSchema, GStruct(fields))) =>
         val bldrWithFields = fields.foldLeft(new GenericRecordBuilder(avroSchema)) { (recordBuilder, container) =>
           val (name, data) = container
@@ -205,7 +205,7 @@ object AvroConverter extends SchemaToAvroAlgebras with GDataInstances {
       case EnvT((_, GString(el)))  => SimpleValue(el).right
     }
 
-    (schema, data).hyloM[\/[Incompatibility[D], ?], DataWithSchema, GenericContainer](alg, zipWithSchemaAlg)
+    (schema, data).hyloM[\/[Incompatibility[D], *], DataWithSchema, GenericContainer](alg, zipWithSchemaAlg)
   }
 
 }

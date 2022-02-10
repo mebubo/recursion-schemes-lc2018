@@ -5,3 +5,8 @@ target/
 *.ipr
 *.iws
 .DS_Store
+.bloop/
+.bsp/
+.metals/
+.vscode/
+metals.sbt
